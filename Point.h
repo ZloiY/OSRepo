@@ -2,18 +2,18 @@
 class Point
 {
 private:
-	int x;
-	int y;
+	double x;
+	double y;
 	long long time_calc;
 	long long time_write;
 public:
 	Point();
-	void setX(int x);
-	void setY(int y);
+	void setX(double x);
+	void setY(double y);
 	void setTimeCalc(long long time);
 	void setTimeWrite(long long time);
-	int getX();
-	int getY();
+	double getX();
+	double getY();
 	long long getTimeCalc();
 	long long getTimeWrite();
 	~Point();

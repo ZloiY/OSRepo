@@ -13,7 +13,8 @@
 #include <time.h>
 #pragma comment(lib, "user32.lib")
 
-#define BUF_SIZE 256
+#define BUF_SIZE sizeof(Point)
+HANDLE event2 = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"event2");
 TCHAR szName[] = TEXT("Global\MyFileMappingObject");
 using namespace std;
 chrono::milliseconds currentMilis();
@@ -24,44 +25,37 @@ int main()
 {
 	LPCTSTR pBuf;
 	HANDLE hMapFile;
-	HANDLE mutex = OpenMutex(SYNCHRONIZE, FALSE, L"test");
-	if (WaitForSingleObject(mutex, INFINITE) == WAIT_OBJECT_0) {
-		hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS,
-			FALSE,
-			szName);
-		if (hMapFile == NULL) {
-			_tprintf(TEXT("Could not open file mapping object in point log(%d).\n"),
-				GetLastError());
-			return 1;
-		}
-		pBuf = (LPTSTR)MapViewOfFile(hMapFile,
-			FILE_MAP_ALL_ACCESS,
-			0,
-			0,
-			BUF_SIZE);
-		if (pBuf == NULL) {
-			_tprintf(TEXT("Could not map view of file(%d).\n"),
-				GetLastError());
-			CloseHandle(hMapFile);
-			return 1;
-		}
-		Point point = Point();
-		CopyMemory(&point, (PVOID)pBuf, sizeof(Point));
-		/*cout << point.getY() << endl;
-		cout << point.getX() << endl;
-		cout << point.getTimeCalc() << endl;
-		cout << point.getTimeWrite() << endl;*/
-		ofstream pointLog("E:\\Log.txt", ios::app);
-		if (pointLog.is_open()) {
-			pointLog << point.getTimeCalc() << " " << point.getTimeWrite() << endl;
-			pointLog.close();
-		}
-		else cout << "File unable to open.\n";
-		UnmapViewOfFile(pBuf);
-		CloseHandle(hMapFile);
-		ReleaseMutex(mutex);
+	hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS,
+		FALSE,
+		szName);
+	if (hMapFile == NULL) {
+		_tprintf(TEXT("Could not open file mapping object in point log(%d).\n"),
+			GetLastError());
+		return 1;
 	}
-	CloseHandle(mutex);
+	pBuf = (LPTSTR)MapViewOfFile(hMapFile,
+		FILE_MAP_ALL_ACCESS,
+		0,
+		0,
+		BUF_SIZE);
+	if (pBuf == NULL) {
+		_tprintf(TEXT("Could not map view of file(%d).\n"),
+			GetLastError());
+		CloseHandle(hMapFile);
+		return 1;
+	}
+	Point point = Point();
+	CopyMemory(&point, (PVOID)pBuf, sizeof(Point));
+	ofstream pointLog("E:\\Log.txt", ios::app);
+	if (pointLog.is_open()) {
+		pointLog << point.getTimeCalc() << " " << point.getTimeWrite() << endl;
+		pointLog.close();
+	}
+	else cout << "File unable to open.\n";
+	UnmapViewOfFile(pBuf);
+	CloseHandle(hMapFile);
+	SetEvent(event2);
+	CloseHandle(event2);
     return 0;
 }
 

@@ -5,17 +5,17 @@ using namespace std;
 
 Point::Point()
 {
-	x = 0;
-	y = 0;
+	x = 0.0;
+	y = 0.0;
 	time_calc = 0;
 	time_write = 0;
 }
 
-void Point::setX(int x) {
+void Point::setX(double x) {
 	this->x = x;
 }
 
-void Point::setY(int y) {
+void Point::setY(double y) {
 	this->y = y;
 }
 
@@ -27,11 +27,11 @@ void Point::setTimeWrite(long long time) {
 	this->time_write = time;
 }
 
-int Point::getX() {
+double Point::getX() {
 	return x;
 }
 
-int Point::getY() {
+double Point::getY() {
 	return y;
 }
 
